@@ -1,4 +1,4 @@
-%% State-space model of the Luenberger observer
+%% Load Estimator Designs
 %Ini
 % clc; clear all; close all;
 s = tf('s');
@@ -19,7 +19,7 @@ C = [1 0]; %[1 1]
 D = zeros(size(C, 1), size(B, 2));
 
 sys1 = ss(A, B, C, D);
-G = tf(sys1);
+G_sys1 = tf(sys1);
 d_sys1 = c2d(sys1, ts, d_mode);
 
 %% Designing observer gains
@@ -43,7 +43,7 @@ eig_L_cont = eig(A - L*C);
 %% Discrete Luenberger estimator
 %Re-formulate the system matrices
 A_e = A - L*C;
-B_e = [B L];
+B_e = [B L]; %D = 0
 C_e = eye(size(A_e));
 D_e = zeros(size(C_e, 1), size(B_e, 2));
 
@@ -86,8 +86,8 @@ K_obs = lqe(A_KF, G, C_KF, q_est, r_est);
 %% Discrete Kalman-filter
 %Re-formulate the system matrices
 A_e_KF = A - K_obs*C;
-B_e_KF = [B_KF K_obs];
-C_e_KF = [1 0];
+B_e_KF = [B_KF K_obs]; %D_KF = 0
+C_e_KF = eye(size(A_e_KF));
 D_e_KF = zeros(size(C_e_KF, 1), size(B_e_KF, 2));
 
 sys_KF2 = ss(A_e_KF, B_e_KF, C_e_KF, D_e_KF);
